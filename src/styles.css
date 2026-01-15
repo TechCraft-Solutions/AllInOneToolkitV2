@@ -447,3 +447,43 @@ td[role="presentation"] {
 .fc-button-group {
   @apply !rounded-xl;
 }
+
+.json-highlighter {
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.json-hl-key {
+  @apply !text-red-500 dark:!text-red-400 font-medium;
+}
+
+.json-hl-string {
+  @apply !text-green-600 dark:!text-green-400;
+}
+
+.json-hl-number {
+  @apply !text-amber-600 dark:!text-amber-400;
+}
+
+.json-hl-boolean {
+  @apply !text-purple-600 dark:!text-purple-400 font-medium;
+}
+
+.json-hl-null {
+  @apply !text-cyan-600 dark:!text-cyan-400 font-medium;
+}
+
+.json-hl-bracket {
+  @apply !text-gray-700 dark:!text-gray-300 font-semibold;
+}
+
+.json-hl-colon {
+  @apply !text-gray-700 dark:!text-gray-300 mr-1;
+}

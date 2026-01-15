@@ -1,0 +1,201 @@
+<div class="p-4">
+  <div class="styleBorderSolidLite border overflow-x-auto">
+    <div
+      class="flex items-center gap-3 px-3 py-2 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600"
+    >
+      <div class="ml-4 w-12 flex justify-center">
+        <mat-checkbox (change)="onSelAll($event)" />
+      </div>
+      <div class="flex-1 font-medium text-gray-700 dark:text-gray-300 text-sm">Key</div>
+      <div class="flex-1 font-medium text-gray-700 dark:text-gray-300 text-sm">Value</div>
+      <div class="w-16 font-medium text-gray-700 dark:text-gray-300 text-sm">Actions</div>
+      @if (
+        clipboardService.hasData() &&
+        clipboardService.isCompatibleWithTarget(
+          clipboardService.getClipboardData()!.type,
+          "editable-table"
+        )
+      ) {
+        <div class="ml-auto flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+          <mat-icon class="text-sm">content_paste</mat-icon>
+          <span>Ctrl+V to paste</span>
+        </div>
+      }
+    </div>
+
+    @if (
+      (type === "params" && selectedTabIndex === 0) ||
+      (type === "headers" && selectedTabIndex === 1) ||
+      (type === "body" && selectedTabIndex === 2)
+    ) {
+      <div
+        cdkDropList
+        [cdkDropListData]="list"
+        (cdkDropListDropped)="onDropTableRecords($event)"
+        class="min-h-0"
+      >
+        @for (item of list; track $index) {
+          <div
+            class="flex items-center gap-3 px-3 py-2 border-b border-gray-200 dark:border-gray-600 {{
+              item.key !== '' ? 'hover:bg-gray-50 dark:hover:bg-gray-700' : ''
+            }} {{
+              selectedRows.has($index)
+                ? 'bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800'
+                : ''
+            }}"
+            cdkDrag
+            [cdkDragData]="item"
+            (cdkDragStarted)="onDragStart($event, item, $index)"
+            (cdkDragEnded)="onDragEnd($event)"
+          >
+            <div
+              *cdkDragPreview
+              class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded p-2 shadow-lg"
+              style="pointer-events: none; z-index: 1002"
+            >
+              @if (draggedItem?.data?.items && draggedItem.data.items.length > 1) {
+                <span class="text-sm font-medium">
+                  {{ draggedItem.data.items.length }} selected items
+                </span>
+              } @else {
+                <span class="text-sm font-medium"
+                  >{{ draggedItem?.data?.key || item.key || "Empty row" }}:
+                  {{
+                    draggedItem?.data
+                      ? getRawValue(draggedItem!.data!.value)
+                      : getRawValue(item.value)
+                  }}</span
+                >
+              }
+            </div>
+            <div
+              *cdkDragPlaceholder
+              class="bg-blue-100 dark:bg-blue-900 border-2 border-dashed border-blue-300 dark:border-blue-700 rounded h-12"
+              style="pointer-events: none"
+            ></div>
+            <div class="w-12 flex justify-center">
+              @if (item.key !== "") {
+                <div class="flex items-center gap-2">
+                  <button
+                    class="cursor-move p-1 rounded text-gray-600 dark:text-gray-400 {{
+                      selectedRows.has($index)
+                        ? 'bg-blue-100 dark:bg-blue-900'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }}"
+                    cdkDragHandle
+                    (click)="toggleSelection($index)"
+                    [title]="
+                      selectedRows.has($index)
+                        ? 'Click to deselect'
+                        : 'Click to select for multi-drag'
+                    "
+                  >
+                    <mat-icon
+                      fontIcon="drag_indicator"
+                      class="!w-4 !h-5 !text-base {{
+                        selectedRows.has($index) ? 'text-blue-600 dark:text-blue-400' : ''
+                      }}"
+                    ></mat-icon>
+                  </button>
+                  <mat-checkbox
+                    [checked]="item.isActive"
+                    (change)="item.isActive = $event.checked"
+                  />
+                </div>
+              }
+            </div>
+
+            <div class="flex-1 cursor-pointer" (click)="onEditObj($index, 'key', item)">
+              @if (editingRow === $index && editingCol === "key") {
+                <input
+                  id="editing-input"
+                  class="w-full p-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none"
+                  type="text"
+                  [value]="item.key"
+                  (keydown)="onKeyDown($event, $index, 'key')"
+                  (keyup)="onInputChange($event, $index, 'key')"
+                  (blur)="editingCol = ''; editingRow = -1"
+                  (focus)="selectContent()"
+                />
+              } @else {
+                @if (item.key !== "") {
+                  <span>{{ item.key }}</span>
+                } @else {
+                  <span class="text-gray-400 italic">Click to add key</span>
+                }
+              }
+            </div>
+
+            <div class="flex-1 cursor-pointer" (click)="onEditObj($index, 'value', item)">
+              @if (editingRow === $index && editingCol === "value") {
+                @if (type === "body") {
+                  <textarea
+                    id="editing-input"
+                    class="w-full p-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none resize-y"
+                    rows="3"
+                    [value]="getRawValue(item.value)"
+                    (keydown)="onKeyDown($event, $index, 'value')"
+                    (keyup)="onInputChange($event, $index, 'value')"
+                    (blur)="editingCol = ''; editingRow = -1"
+                    (focus)="selectContent()"
+                  >
+                  </textarea>
+                } @else {
+                  <input
+                    id="editing-input"
+                    class="w-full p-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white outline-none"
+                    type="text"
+                    [value]="getRawValue(item.value)"
+                    (keydown)="onKeyDown($event, $index, 'value')"
+                    (keyup)="onInputChange($event, $index, 'value')"
+                    (blur)="editingCol = ''; editingRow = -1"
+                    (focus)="selectContent()"
+                  />
+                }
+              } @else {
+                <span
+                  [class]="
+                    isValuePresent(item)
+                      ? 'cursor-pointer truncate'
+                      : 'cursor-pointer text-gray-400 italic'
+                  "
+                >
+                  @if (isValuePresent(item)) {
+                    {{ getRawValue(item.value) }}
+                  } @else {
+                    Click to add value
+                  }
+                </span>
+              }
+            </div>
+
+            <div class="w-16 flex justify-center">
+              @if (item.key !== "") {
+                <button
+                  class="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
+                  (click)="onDeleteRec($index)"
+                >
+                  <mat-icon fontIcon="delete" class="!w-5 !h-6 !text-xl" />
+                </button>
+              }
+            </div>
+          </div>
+
+          <div
+            *cdkDragPlaceholder
+            class="bg-blue-100 dark:bg-blue-900 border border-blue-300 dark:border-blue-700 rounded p-2 m-1 opacity-50"
+            style="pointer-events: none"
+          ></div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Keyboard shortcuts hint -->
+  @if (list.length > 0) {
+    <div class="text-xs text-gray-500 dark:text-gray-400 mt-2 px-2">
+      <mat-icon class="!text-xl mr-1 !w-[20px] !h-[20px]" fontIcon="keyboard" />
+      Ctrl+A: Select all • Ctrl+C: Copy selected • Ctrl+V: Paste • Escape: Clear selection
+    </div>
+  }
+</div>

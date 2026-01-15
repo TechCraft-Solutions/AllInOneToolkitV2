@@ -23,6 +23,23 @@ export class ParsingHelper {
       const parsed = JSON.parse(data);
       return typeof parsed === "object" && parsed !== null;
     } catch (e) {
+      const lines = data.split("\n");
+      let bodyStart = 0;
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].trim() === "") {
+          bodyStart = i + 1;
+          break;
+        }
+      }
+      if (bodyStart > 0) {
+        const body = lines.slice(bodyStart).join("\n").trim();
+        try {
+          const parsed = JSON.parse(body);
+          return typeof parsed === "object" && parsed !== null;
+        } catch (e2) {
+          return false;
+        }
+      }
       return false;
     }
   }
