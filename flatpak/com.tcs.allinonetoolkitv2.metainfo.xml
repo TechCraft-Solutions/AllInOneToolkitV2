@@ -66,6 +66,16 @@
   </provides>
 
   <releases>
+    <release version="0.8.0" date="2026-01-15">
+      <description>
+        <p>Make GitHub username configurable in about service</p>
+        <p>Update GitHub Actions runners to use Blacksmith-hosted instances</p>
+        <p>Add editable table component for key-value editing</p>
+        <p>Add row selection and copy functionality to table component</p>
+        <p>Rename common helper, remove unused methods, and update imports</p>
+        <p>Preserve integer precision in number serialization for URL requests</p>
+      </description>
+    </release>
     <release version="0.7.0" date="2025-12-31">
       <description>
         <p>Added a page for displaying percentage data on a pie chart</p>
