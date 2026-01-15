@@ -2,9 +2,34 @@
   <mat-expansion-panel-header>
     <mat-panel-title>Nested Table</mat-panel-title>
   </mat-expansion-panel-header>
+
+  @if (showSelection) {
+    <div class="flex items-center gap-2 mb-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+      <span class="text-sm text-blue-700 dark:text-blue-300">
+        {{ getSelectedCount() }} row(s) selected
+      </span>
+      <button mat-raised-button color="primary" (click)="copySelectedRows()" class="text-sm">
+        <mat-icon class="mr-1">content_copy</mat-icon>
+        Copy Selected
+      </button>
+      <button mat-button (click)="clearSelection()" class="text-sm">
+        <mat-icon class="mr-1">clear</mat-icon>
+        Clear
+      </button>
+    </div>
+  }
+
   <table class="styleBorderSolid border w-full m-1">
     <thead>
       <tr>
+        <th class="styleTD w-12">
+          <mat-checkbox
+            [checked]="isAllSelected()"
+            [indeterminate]="isIndeterminate()"
+            (change)="selectAllRows()"
+          >
+          </mat-checkbox>
+        </th>
         @for (cell of dataTable.thead; track cell) {
           <th class="styleTD">{{ cell }}</th>
         }
@@ -12,14 +37,34 @@
     </thead>
     <tbody>
       @for (row of dataTable.tbody; track row; let i = $index) {
-        <tr>
+        <tr
+          [ngClass]="
+            isRowSelected(i)
+              ? 'bg-blue-100 dark:bg-blue-900/30'
+              : i % 2 == 0
+                ? 'bg-gray-300 dark:bg-slate-700'
+                : ''
+          "
+        >
+          <td class="styleTD w-12">
+            <mat-checkbox
+              [checked]="isRowSelected(i)"
+              (change)="toggleRowSelection(i)"
+              [disabled]="!isRowSelectable(i)"
+            >
+            </mat-checkbox>
+          </td>
           @for (cell of row; track cell) {
-            <td class="styleTD" [ngClass]="i % 2 == 0 ? 'bg-gray-300 dark:bg-slate-700' : ''">
+            <td class="styleTD">
               @if (isString(cell)) {
                 {{ cell }}
               } @else if (isTable(cell)) {
                 <div class="theme rounded-xl">
-                  <app-table [dataTable]="cell" [index]="i + 1" />
+                  <app-table
+                    [dataTable]="cell"
+                    [index]="i + 1"
+                    [source]="source + ' - Row ' + (i + 1)"
+                  />
                 </div>
               }
             </td>
@@ -28,4 +73,11 @@
       }
     </tbody>
   </table>
+
+  @if (dataTable.tbody.length > 0) {
+    <div class="text-xs text-gray-500 dark:text-gray-400 mt-2 px-2">
+      <mat-icon class="!text-[10px] mr-1">keyboard</mat-icon>
+      Ctrl+A: Select all • Ctrl+C: Copy selected rows
+    </div>
+  }
 </mat-expansion-panel>

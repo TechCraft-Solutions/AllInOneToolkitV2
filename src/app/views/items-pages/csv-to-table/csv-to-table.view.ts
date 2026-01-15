@@ -2,13 +2,17 @@
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
 
+/* models */
+import { TableData } from "@models/table-data";
+
 /* components */
 import { FileInputComponent } from "@components/fields/file-input/file-input.component";
+import { TableComponent } from "@components/table/table.component";
 
 @Component({
   selector: "app-csv-to-table",
   standalone: true,
-  imports: [CommonModule, FileInputComponent],
+  imports: [CommonModule, FileInputComponent, TableComponent],
   templateUrl: "./csv-to-table.view.html",
 })
 export class CsvToTableView {
@@ -17,7 +21,10 @@ export class CsvToTableView {
   typeFile: Array<string> = ["csv"];
   arrCSV: Array<any> = [];
 
-  dataTable: Array<any> = [];
+  dataTable: TableData = {
+    thead: [],
+    tbody: [],
+  };
   blockTable: boolean = false;
 
   setDataFile(dataFile: any) {
@@ -32,9 +39,18 @@ export class CsvToTableView {
 
   createTable() {
     this.blockTable = true;
-    if (this.arrCSV[this.arrCSV.length - 1][0] === "") {
+    if (this.arrCSV.length > 0 && this.arrCSV[this.arrCSV.length - 1][0] === "") {
       this.arrCSV.pop();
     }
-    this.dataTable = this.arrCSV;
+
+    const headers: string[] = [];
+    if (this.arrCSV.length > 0) {
+      headers.push(...this.arrCSV[0].map((_: any, colIndex: number) => `Column ${colIndex + 1}`));
+    }
+
+    this.dataTable = {
+      thead: headers,
+      tbody: this.arrCSV,
+    };
   }
 }

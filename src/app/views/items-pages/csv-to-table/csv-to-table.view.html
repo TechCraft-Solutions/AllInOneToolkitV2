@@ -23,15 +23,7 @@
 
   @if (blockTable) {
     <div class="flex flex-col">
-      <table class="styleBorderSolid border">
-        @for (row of dataTable; track row) {
-          <tr>
-            @for (col of row; track col) {
-              <td class="styleTD">{{ col }}</td>
-            }
-          </tr>
-        }
-      </table>
+      <app-table [dataTable]="dataTable" [source]="'CSV to Table'" />
     </div>
   }
 </div>

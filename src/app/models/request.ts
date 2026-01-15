@@ -9,6 +9,7 @@ export interface RecObj {
   key: string;
   value: any;
   isActive: boolean;
+  position: number;
 }
 
 export interface BodyValue {
@@ -20,6 +21,7 @@ export interface BodyData {
   key: string;
   value: BodyValue;
   isActive: boolean;
+  position: number;
 }
 
 export interface RequestResponse {
