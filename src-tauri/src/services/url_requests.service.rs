@@ -251,9 +251,15 @@ impl UrlRequestsService {
             if rec.isActive && !rec.key.is_empty() {
               let value = match &rec.value {
                 BodyValue::String(s) => serde_json::Value::String(s.clone()),
-                BodyValue::Number(n) => serde_json::Value::Number(
-                  serde_json::Number::from_f64(*n).unwrap_or(serde_json::Number::from(0)),
-                ),
+                BodyValue::Number(n) => {
+                  if n.fract() == 0.0 && *n >= i64::MIN as f64 && *n <= i64::MAX as f64 {
+                    serde_json::Value::Number(serde_json::Number::from(*n as i64))
+                  } else {
+                    serde_json::Value::Number(
+                      serde_json::Number::from_f64(*n).unwrap_or(serde_json::Number::from(0)),
+                    )
+                  }
+                }
                 BodyValue::Bool(b) => serde_json::Value::Bool(*b),
                 BodyValue::Array(arr) => serde_json::Value::Array(arr.clone()),
                 BodyValue::Object(obj) => obj.clone(),
