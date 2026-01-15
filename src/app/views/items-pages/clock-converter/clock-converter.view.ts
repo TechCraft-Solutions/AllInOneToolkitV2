@@ -1,25 +1,25 @@
 /* sys lib */
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { CommonModule } from "@angular/common";
+import { Component, OnInit } from "@angular/core";
 
 /* materials */
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
 
 /* helpers */
-import { Common } from '@helpers/common';
+import { Common } from "@helpers/common.helper";
 
 @Component({
-  selector: 'app-clock-converter',
+  selector: "app-clock-converter",
   standalone: true,
   imports: [CommonModule, MatFormFieldModule, MatInputModule],
-  templateUrl: './clock-converter.view.html'
+  templateUrl: "./clock-converter.view.html",
 })
 export class ClockConverterView implements OnInit {
   constructor() {}
 
   timestamp: number = 0;
-  currentTime: string = '';
+  currentTime: string = "";
   inputTS: number = 0;
   inputYear: number = 0;
   inputMonth: number = 0;
@@ -34,16 +34,21 @@ export class ClockConverterView implements OnInit {
   ngOnInit(): void {
     setInterval(() => {
       this.timestamp = Math.floor(new Date().getTime() / 1000);
-      this.currentTime = new Date().toLocaleTimeString(undefined, { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      this.currentTime = new Date().toLocaleTimeString(undefined, {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
     }, 1000);
 
     this.inputTS = Math.floor(new Date().getTime());
     this.inputYear = new Date().getFullYear();
     this.inputMonth = new Date().getMonth() + 1;
     this.inputDate = new Date().getDate();
-    this.inputHours = new Date().getHours(); 
-    this.inputMinutes = new Date().getMinutes(); 
-    this.inputSeconds = new Date().getSeconds(); 
+    this.inputHours = new Date().getHours();
+    this.inputMinutes = new Date().getMinutes();
+    this.inputSeconds = new Date().getSeconds();
   }
 
   setTS(event: any) {
@@ -82,7 +87,14 @@ export class ClockConverterView implements OnInit {
         return date.toUTCString();
 
       case "dt":
-        const dateDnT = new Date(this.inputYear, this.inputMonth - 1, this.inputDate, this.inputHours, this.inputMinutes, this.inputSeconds);
+        const dateDnT = new Date(
+          this.inputYear,
+          this.inputMonth - 1,
+          this.inputDate,
+          this.inputHours,
+          this.inputMinutes,
+          this.inputSeconds
+        );
         return dateDnT.toUTCString();
 
       default:
@@ -97,7 +109,14 @@ export class ClockConverterView implements OnInit {
         return date.toLocaleString();
 
       case "dt":
-        const dateDnT = new Date(this.inputYear, this.inputMonth - 1, this.inputDate, this.inputHours, this.inputMinutes, this.inputSeconds);
+        const dateDnT = new Date(
+          this.inputYear,
+          this.inputMonth - 1,
+          this.inputDate,
+          this.inputHours,
+          this.inputMinutes,
+          this.inputSeconds
+        );
         return dateDnT.toLocaleString();
 
       default:
@@ -117,7 +136,14 @@ export class ClockConverterView implements OnInit {
         }
 
       case "dt":
-        const tempDT = new Date(this.inputYear, this.inputMonth - 1, this.inputDate, this.inputHours, this.inputMinutes, this.inputSeconds);
+        const tempDT = new Date(
+          this.inputYear,
+          this.inputMonth - 1,
+          this.inputDate,
+          this.inputHours,
+          this.inputMinutes,
+          this.inputSeconds
+        );
         if (new Date().getTime() > tempDT.getTime()) {
           return Common.formatTimeAgo(tempDT);
         } else if (new Date().getTime() <= tempDT.getTime()) {

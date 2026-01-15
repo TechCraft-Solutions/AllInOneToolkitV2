@@ -6,31 +6,6 @@ import { FileService } from "@services/file.service";
 import { NotifyService } from "@services/notify.service";
 
 export class Common {
-  static isXML(str: string): boolean {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(str, "application/xml");
-    return doc.getElementsByTagName("parsererror").length === 0;
-  }
-
-  static isHTML(str: string): boolean {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(str, "text/html");
-    return Array.from(doc.body.childNodes).every((element) => element.nodeName !== "parsererror");
-  }
-
-  static isJson(data: Object): boolean {
-    return typeof data === "object";
-  }
-
-  static isJsonAsString(data: string): boolean {
-    try {
-      const parsed = JSON.parse(data);
-      return typeof parsed === "object" && parsed !== null;
-    } catch (e) {
-      return false;
-    }
-  }
-
   static truncateString(str: string, length: number = 25): string {
     if (str) {
       const endIndex: number = length;

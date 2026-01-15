@@ -3,7 +3,7 @@ import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
 
 /* helpers */
-import { Common } from "@helpers/common";
+import { Common } from "@helpers/common.helper";
 
 /* services */
 import { FileService } from "@services/file.service";

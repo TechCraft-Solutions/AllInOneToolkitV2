@@ -6,7 +6,7 @@ import { Component } from "@angular/core";
 import { MatIconModule } from "@angular/material/icon";
 
 /* helpers */
-import { Common } from "@helpers/common";
+import { ParsingHelper } from "@helpers/parsing.helper";
 
 /* services */
 import { VirusTotalService } from "@services/virus-total.service";
@@ -56,7 +56,7 @@ export class VirusTotalView {
         .then((response: Response<string>) => {
           if (response.status == ResponseStatus.SUCCESS) {
             if (response.data && response.data != "") {
-              if (Common.isJsonAsString(response.data)) {
+              if (ParsingHelper.isJsonAsString(response.data)) {
                 const json = JSON.parse(response.data);
                 if (!json.error) {
                   const colors = ["green-600", "yellow-300", "orange-500", "red-600"];
